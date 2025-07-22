@@ -1,3 +1,4 @@
+
 # RPG-SWE-Task-2
 
 1. Game Overview
@@ -357,7 +358,7 @@ Movement (checks exits, handles blocking droid, updates location or hazard)
 
 Use Tool (verifies tool possession, then checks and repairs the droid)
 
-Win (validates both location and crystal before awarding bonus and ending
+Win (validates both location and crystal before awarding bonus and ending)
 
 Structure Chart
 Create a structure chart with start game loop at the top, branching into process player input and check win condition. Under process player input, include modules labeled move player, collect item, repair droid, show status, and attempt win, and draw arrows from each of those to the corresponding method calls.
