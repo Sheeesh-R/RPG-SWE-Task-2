@@ -1,88 +1,178 @@
-from items import StationItem, DiagnosticTool, EnergyCrystal
+"""
+Main game module containing the GameController class.
+Manages game state and user interaction.
+"""
 from location import Location
+from items import DiagnosticTool, EnergyCrystal
 from droid import DamagedMaintenanceDroid
 from player import Player
 
 class GameController:
+    """
+    Main game controller that manages game flow and user interaction.
+    Demonstrates composition and single responsibility principle.
+    """
     def __init__(self):
+        self._initialize_game_world()
+        self._game_running = True
+    
+    def _initialize_game_world(self):
+        """
+        Private method to set up the game world.
+        Demonstrates encapsulation of initialization logic.
+        """
         # Create locations
-        self.maintenance_tunnels = Location("Maintenance Tunnels", 
-                                         "The tunnels are dimly lit and filled with the hum of machinery.")
-        self.docking_bay = Location("Docking Bay", 
-                                  "The docking bay is filled with the glow of energy conduits.")
+        self.maintenance_tunnels = Location(
+            "Maintenance Tunnels", 
+            "You find yourself in dimly lit tunnels filled with the constant hum of machinery. "
+            "Steam hisses from damaged pipes, and warning lights blink ominously."
+        )
         
-        # Set initial items
-        self.maintenance_tunnels.has_tool = True
-        self.docking_bay.has_crystal = True
+        self.docking_bay = Location(
+            "Docking Bay", 
+            "The massive docking bay stretches before you, its walls lined with energy conduits "
+            "that flicker weakly. Without the energy crystal, the station's power systems are failing."
+        )
         
-        # Set up exits
+        # Set up exits (bidirectional)
         self.maintenance_tunnels.add_exit("east", self.docking_bay)
         self.docking_bay.add_exit("west", self.maintenance_tunnels)
         
-        # Create droid and player
-        self.droid = DamagedMaintenanceDroid()
-        self.maintenance_tunnels.set_droid_present(True)
-        self.player = Player(self.maintenance_tunnels)
-
-    def run_game(self):
-        print("Welcome to the Station Maintenance Game!")
-        print("Type commands like 'move east', 'pick up tool', 'use tool', 'pick up crystal', 'status', 'win', or 'help'.")
-        print("Type 'help' to see all available commands.")
+        # Create and place items
+        diagnostic_tool = DiagnosticTool()
+        energy_crystal = EnergyCrystal()
         
-        while True:
-            print(self.player.current_location.describe())
-            command = input("\nWhat would you like to do? ").lower()
-            
-            if command == "help":
-                print("\nAvailable commands:")
-                print("- move [direction] - Move to another location (e.g., 'move east')")
-                print("- pick up tool - Pick up the diagnostic tool")
-                print("- use tool - Use the diagnostic tool on the droid")
-                print("- pick up crystal - Pick up the energy crystal")
-                print("- status - Check your current score and hazards")
-                print("- win - Complete the mission (only works in Docking Bay)")
-                print("- quit - Exit the game")
-                print("- help - Show this list of commands")
-            
-            elif command.startswith("move"):
-                direction = command.split()[1]
-                if self.player.move(direction):
-                    print(f"Moved {direction}")
-                else:
-                    print("Can't move that way.")
-            
-            elif command == "pick up tool":
-                if self.player.pick_up_tool():
-                    print("Picked up the diagnostic tool!")
-                else:
-                    print("No tool to pick up here.")
-            
-            elif command == "use tool":
-                if self.player.use_tool_on_droid():
-                    print("Successfully repaired the droid!")
-                else:
-                    print("Can't use tool here.")
-            
-            elif command == "pick up crystal":
-                if self.player.pick_up_crystal():
-                    print("Picked up the energy crystal!")
-                else:
-                    print("No crystal to pick up here.")
+        self.maintenance_tunnels.add_item(diagnostic_tool)
+        self.docking_bay.add_item(energy_crystal)
+        
+        # Create the maintenance droid
+        self.maintenance_droid = DamagedMaintenanceDroid()
+        self.maintenance_tunnels.set_droid_present(True)
+        
+        # Create the player
+        self.player = Player(self.maintenance_tunnels)
+    
+    def _display_help(self):
+        """Display available commands to the player"""
+        help_text = """
+Available Commands:
+==================
+• move <direction>     - Move to another area (e.g., 'move east')
+• pick up <item>       - Pick up an item (e.g., 'pick up tool')
+• use tool            - Use the diagnostic tool on the maintenance droid
+• examine <item>      - Get detailed information about an item
+• status              - View your current status and inventory
+• win                 - Complete the mission (requires energy crystal in Docking Bay)
+• help                - Display this help message
+• quit                - Exit the game
 
-            elif command == "status":
+Tips:
+• Commands are case-insensitive
+• You can use 'tool' instead of 'diagnostic tool' and 'crystal' instead of 'energy crystal'
+• Explore the station and discover what needs to be done!
+"""
+        print(help_text)
+    
+    def _process_command(self, command):
+        """
+        Process player input and execute appropriate actions.
+        Demonstrates command pattern and input validation.
+        """
+        if not command:
+            return
+        
+        command = command.lower().strip()
+        parts = command.split()
+        
+        if not parts:
+            return
+        
+        main_command = parts[0]
+        
+        try:
+            if main_command == "help":
+                self._display_help()
+            
+            elif main_command == "move":
+                if len(parts) < 2:
+                    print("Move where? (e.g., 'move east')")
+                    return
+                
+                direction = parts[1].lower()  # Ensure direction is lowercase
+                success, message = self.player.move(direction)
+                print(message)
+            
+            elif main_command == "pick" and len(parts) > 1 and parts[1] == "up":
+                if len(parts) < 3:
+                    print("Pick up what? (e.g., 'pick up tool')")
+                    return
+                
+                item_name = " ".join(parts[2:])
+                # Handle shorthand for diagnostic tool
+                if item_name == "tool":
+                    item_name = "diagnostic tool"
+                elif item_name == "crystal":
+                    item_name = "energy crystal"
+                
+                success, message = self.player.pick_up_item(item_name)
+                print(message)
+            
+            elif main_command == "use" and len(parts) > 1 and parts[1] == "tool":
+                success, message = self.player.use_tool_on_droid(self.maintenance_droid)
+                print(message)
+            
+            elif main_command == "examine" and len(parts) > 1:
+                item_name = " ".join(parts[1:])
+                # Handle shorthand for items
+                if item_name == "tool":
+                    item_name = "diagnostic tool"
+                elif item_name == "crystal":
+                    item_name = "energy crystal"
+                
+                result = self.player.examine_item(item_name)
+                print(result)
+            
+            elif main_command == "status":
                 print(self.player.get_status())
-
-            elif command == "win":
-                if self.player.current_location.name == "Docking Bay" and \
-                   self.player.has_tool and self.player.has_crystal:
-                    self.player.score += 30
-                    print("\nCongratulations! You've successfully repaired the station!")
-                    print(f"Final Score: {self.player.score}")
-                    print(f"Hazards Encountered: {self.player.hazard_count}")
-                    print(f"Hazards encountered: {self.player.hazard_count}")
-                    break
-                else:
-                    print("You can only win from the Docking Bay.")
-
+            
+            elif main_command == "win":
+                success, message = self.player.attempt_win()
+                print(message)
+                if success:
+                    self._game_running = False
+            
+            elif main_command == "quit":
+                print("Thanks for playing!")
+                self._game_running = False
+            
             else:
-                print("Unknown command. Type 'help' to see available commands.")
+                print("I don't understand that command. Type 'help' for a list of commands.")
+        
+        except Exception as e:
+            print(f"An error occurred: {e}")
+    
+    def start(self):
+        """Start the main game loop"""
+        print("\n=== Space Station Emergency ===")
+        print("The station's power is failing! Find the energy crystal to restore power!")
+        print("Type 'help' for a list of commands.\n")
+        
+        # Initial location description
+        print(self.player.current_location.describe())
+        
+        # Main game loop
+        while self._game_running:
+            try:
+                command = input("\n> ").strip()
+                self._process_command(command)
+                
+                # Show current location after each command
+                if self._game_running and command not in ["status", "help"]:
+                    print(self.player.current_location.describe())
+            
+            except (KeyboardInterrupt, EOFError):
+                print("\nGame quit by user.")
+                break
+            except Exception as e:
+                print(f"\nAn error occurred: {e}")
+                continue
