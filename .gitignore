@@ -38,3 +38,6 @@ ENV/
 
 # Logs
 *.log
+
+# Version control files
+CHANGELOG.md

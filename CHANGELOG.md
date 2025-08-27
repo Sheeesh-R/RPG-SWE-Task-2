@@ -2,12 +2,16 @@
 
 All notable changes to the Text-Based RPG Game project.
 
-## [Unreleased]
-- Initial project setup
-- Core game mechanics implementation
-- Basic command parsing
-- Scoring system
-- Game state management
+## [1.1.0] - 2025-08-27
+### Removed
+- Removed 'examine' command and related functionality
+- Removed examine methods from item classes
+- Cleaned up related documentation and help text
+
+### Fixed
+- Fixed indentation issues in game.py
+- Resolved merge conflicts from recent updates
+- Improved code consistency and formatting
 
 ## [1.0.0] - 2025-07-30
 ### Added
