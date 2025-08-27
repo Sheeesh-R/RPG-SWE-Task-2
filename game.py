@@ -60,7 +60,6 @@ Available Commands:
 • move <direction>     - Move to another area (e.g., 'move east')
 • pick up <item>       - Pick up an item (e.g., 'pick up tool')
 • use tool            - Use the diagnostic tool on the maintenance droid
-• examine <item>      - Get detailed information about an item
 • status              - View your current status and inventory
 • win                 - Complete the mission (requires energy crystal in Docking Bay)
 • help                - Display this help message
@@ -120,17 +119,6 @@ Tips:
             elif main_command == "use" and len(parts) > 1 and parts[1] == "tool":
                 success, message = self.player.use_tool_on_droid(self.maintenance_droid)
                 print(message)
-            
-            elif main_command == "examine" and len(parts) > 1:
-                item_name = " ".join(parts[1:])
-                # Handle shorthand for items
-                if item_name == "tool":
-                    item_name = "diagnostic tool"
-                elif item_name == "crystal":
-                    item_name = "energy crystal"
-                
-                result = self.player.examine_item(item_name)
-                print(result)
             
             elif main_command == "status":
                 print(self.player.get_status())

@@ -16,12 +16,6 @@ class StationItem:
         """Getter method for item name (encapsulation)"""
         return self._name
     
-    def examine(self):
-        """
-        Base examine method - to be overridden by subclasses.
-        This demonstrates polymorphism as each subclass provides its own implementation.
-        """
-        return self._description
 
 
 class DiagnosticTool(StationItem):
@@ -33,10 +27,6 @@ class DiagnosticTool(StationItem):
         super().__init__("Diagnostic Tool", 
                         "A sophisticated diagnostic device with quantum sensors.")
     
-    def examine(self):
-        """Override examine method for specific diagnostic tool behavior"""
-        base_description = super().examine()
-        return f"{base_description}\nThe tool hums quietly and displays readouts in an alien script."
 
 
 class EnergyCrystal(StationItem):
@@ -48,7 +38,3 @@ class EnergyCrystal(StationItem):
         super().__init__("Energy Crystal", 
                         "A translucent crystal that pulses with ethereal energy.")
     
-    def examine(self):
-        """Override examine method for specific crystal behavior"""
-        base_description = super().examine()
-        return f"{base_description}\nThe crystal's energy readings are off the charts - this could power the entire station!"
