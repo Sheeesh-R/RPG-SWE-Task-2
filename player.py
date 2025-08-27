@@ -110,6 +110,26 @@ class Player:
         
         return True, "You successfully repair the maintenance droid! It powers up and moves away, clearing the path."
     
+<<<<<<< HEAD
+=======
+    def examine_item(self, item_name):
+        """
+        Examine an item in inventory or current location.
+        Demonstrates polymorphism as different items provide different examine results.
+        """
+        # Check inventory first
+        item = self.get_item_from_inventory(item_name)
+        if item is None:
+            # Check current location
+            item = self.current_location.get_item(item_name)
+        
+        if item is None:
+            return f"You don't see a {item_name} here."
+        
+        # This calls the overridden examine() method - demonstrating polymorphism
+        return item.examine()
+    
+>>>>>>> 2d6de0091727a5f4c940c6886e1ff9b9d1ac02b0
     def attempt_win(self):
         """
         Attempt to win the game. Must be in Docking Bay with crystal.
