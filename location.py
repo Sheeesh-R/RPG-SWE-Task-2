@@ -51,8 +51,13 @@ class Location:
         return self._droid_present
     
     def describe(self):
-        """Generate a description of the current location"""
-        description = f"\n{self.name}\n{'-' * len(self.name)}\n{self.description}\n"
+        """Generate a description of the current location."""
+        description = [
+            f"\n{self.name}",
+            f"{'=' * len(self.name)}",
+            self.description,
+            "" 
+        ]
         
         # List items present
         if self._items:
@@ -62,10 +67,14 @@ class Location:
         
         # Show droid if present
         if self._droid_present:
-            description += "\nA damaged maintenance droid blocks your path to the east!\n"
+            description.append(
+                "\nA damaged maintenance droid blocks your path to the east!"
+            )
         
         # List exits
         if self.exits:
-            description += f"\nExits: {', '.join(self.exits.keys())}\n"
+            description.append(
+                f"\nExits: {', '.join(self.exits.keys())}"
+            )
         
-        return description
+        return "\n".join(description)
