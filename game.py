@@ -30,8 +30,9 @@ class GameController:
         
         self.docking_bay = Location(
             "Docking Bay", 
-            "The massive docking bay stretches before you, its walls lined with energy conduits "
-            "that flicker weakly. Without the energy crystal, the station's power systems are failing."
+            "The massive docking bay stretches before you, its walls lined with energy "
+            "conduits that flicker weakly. Without the energy crystal, the station's "
+            "power systems are failing."
         )
         
         # Set up exits (bidirectional)
@@ -53,7 +54,7 @@ class GameController:
         self.player = Player(self.maintenance_tunnels)
     
     def _display_help(self):
-        """Display available commands to the player"""
+        """Display available commands to the player."""
         help_text = """
 Available Commands:
 ==================
@@ -120,6 +121,17 @@ Tips:
             elif main_command == "use" and len(parts) > 1 and parts[1] == "tool":
                 success, message = self.player.use_tool_on_droid(self.maintenance_droid)
                 print(message)
+            
+            elif main_command == "examine" and len(parts) > 1:
+                item_name = " ".join(parts[1:])
+                # Handle shorthand for items
+                if item_name == "tool":
+                    item_name = "diagnostic tool"
+                elif item_name == "crystal":
+                    item_name = "energy crystal"
+                
+                result = self.player.examine_item(item_name)
+                print(result)
             
             elif main_command == "status":
                 print(self.player.get_status())

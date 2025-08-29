@@ -4,9 +4,10 @@ Contains the Location class for managing game locations and their properties.
 
 class Location:
     """
-    Represents a location in the space station.
-    Encapsulates location data and provides methods for interaction.
+    Represents a location in the game world.
+    Contains information about the location's name, description, items, and exits.
     """
+
     def __init__(self, name, description):
         self.name = name
         self.description = description
@@ -56,14 +57,13 @@ class Location:
             f"\n{self.name}",
             f"{'=' * len(self.name)}",
             self.description,
-            "" 
+            ""
         ]
         
         # List items present
         if self._items:
-            description += "\nItems you can see:\n"
-            for item in self._items:
-                description += f"  - {item.get_name()}\n"
+            description.append("\nItems you can see:")
+            description.extend(f"  - {item.get_name()}" for item in self._items)
         
         # Show droid if present
         if self._droid_present:
