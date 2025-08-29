@@ -21,7 +21,7 @@ class StationItem:
     
     def get_name(self):
         """Getter method for item name (encapsulation)"""
-        return self._name
+        return self.name
     
     def examine(self):
         """
@@ -31,7 +31,7 @@ class StationItem:
         Returns:
             str: A detailed description of the item
         """
-        return self._description
+        return self.description
 
 
 class DiagnosticTool(StationItem):
